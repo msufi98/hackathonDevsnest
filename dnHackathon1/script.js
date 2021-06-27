@@ -5,13 +5,15 @@ rightPressed = false
 leftPressed = false
 speed = 2
 
+
+// Ball Object
 let ball = {
   x: 250,
-  y: 480,
+  y: 400,
   radius :5,
   
-  dx: 0,
-  dy: 2,
+  dx: speed/2,
+  dy: -(speed/2),
   draw: function() {
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.radius,0,2*Math.PI);
@@ -19,6 +21,8 @@ let ball = {
   }
 };
 
+
+//Paddle Object
 let paddle = {
   x:250,
   y:400,
@@ -33,6 +37,7 @@ let paddle = {
   }
 }
 
+// Paddle left and right functionality
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 
@@ -51,17 +56,6 @@ function keyUpHandler(e) {
   }
 }
 
-
-function checkWallCollision(){
-  if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
-    ball.dx *= -1;
-  }
-
-  if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
-    ball.dy *= -1;
-  }
-}
-
 function paddleMove(){
   if (rightPressed) {
     paddle.x += 5;
@@ -76,14 +70,44 @@ function paddleMove(){
   }
 }
 
+// Wall bouncing functionality
+function checkWallCollision(){
+  if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+    ball.dx *= -1;
+  }
+
+  if (ball.y - ball.radius < 0) {
+    ball.dy *= -1;
+  }
+  if(ball.y + ball.radius > canvas.height)
+  {
+    endGame("lost")
+  }
+}
+
+
+// Paddle bouncing functionality
 function checkPaddleCollision(){
-  if (ball.x > paddle.x && ball.x < paddle.x + paddle.widthidth) {
-    if (ball.y = y - paddle.height) {
-        ball.dy *= -1;
-    }
+  let half = (paddle.width)/2
+  if ((ball.x +ball.radius) > paddle.x && (ball.x -ball.radius) < paddle.x + paddle.width) {
+    if (ball.y +ball.radius === paddle.y) {
+      
+      factor = ((ball.x-paddle.x) - half )/paddle.width * 2
+      if(0.75 < Math.abs(factor)){
+        if(factor<0) factor= -.75
+        else factor=.75
+      } 
+        console.log(ball.dx,ball.dy)
+        
+        ball.dx = factor*speed
+        ball.dy =(1-Math.abs(factor)) * speed * -1
+        console.log(factor, ball.dx, ball.dy )
+      }
 }
 }
 
+
+// Brick formation functionality
 var brickRowCount = 4;
 var brickColumnCount = 10;
 var brickWidth = 45;
@@ -96,7 +120,7 @@ var bricks = [];
 score =0
 
 
-function collisionDetection() {
+function brickCollisionDetection() {
   for (var c = 0; c < brickColumnCount; c++) {
     for (var r = 0; r < brickRowCount; r++) {
       var b = bricks[c][r];
@@ -106,14 +130,35 @@ function collisionDetection() {
           ball.x -ball.radius<= b.x + brickWidth &&
           ball.y +ball.radius >= b.y &&
           ball.y - ball.radius <= b.y + brickHeight
-        ) {
-          ball.dy *= -1;
-          b.status = 0;
-          score++;
+        ) // Is ball hitting the brick at all 
+        {
+          if((ball.x -ball.radius=== b.x+brickWidth || ball.x +ball.radius=== b.x) && ((ball.y +ball.radius)>b.y && ball.y -ball.radius<b.y+b.height)) // Ball at left or right edge of brick
+          {
+            ball.dx*=-1
+          }
+          else // Ball at up or down edge of brick
+          {
+            ball.dy*=-1
+          }
+            // Brick is destroyed and score updated
+            b.status = 0;
+            score++;
+            brickcount--;
+            if(brickcount === 0) endGame("won")
         }
       }
     }
   }
+}
+
+function endGame(condition){
+  ball.dx = 0
+  ball.dy = 0
+  if(condition === "won")
+  document.querySelector(".high-score").innerText = score
+  else
+  document.querySelector(".high-score").innerText = "You lost"
+
 }
 
 function generateBricks() {
@@ -124,6 +169,7 @@ function generateBricks() {
     }
   }
 }
+brickcount = 0
 
 function drawBricks() {
   for (var c = 0; c < brickColumnCount; c++) {
@@ -138,6 +184,7 @@ function drawBricks() {
         ctx.fillStyle = "#230c33";
         ctx.fill();
         ctx.closePath();
+        brickcount++;
       }
     }
   }
@@ -148,14 +195,13 @@ drawBricks()
 
 function game() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  console.log(ball.x, ball.y);
 
   ball.draw();
   paddle.draw();
 
   checkWallCollision()
   checkPaddleCollision()
-  collisionDetection()
+  brickCollisionDetection()
   paddleMove()
   drawBricks()
 
