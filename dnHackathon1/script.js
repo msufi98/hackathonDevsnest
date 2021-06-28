@@ -2,6 +2,16 @@ var canvas = document.getElementById("can");
 var ctx = canvas.getContext("2d");
 level = 0
 
+function reset(){
+  document.location.reload()
+}
+
+//Audio assets
+const game_start = new Audio('start_game.mp3');
+const bounce_wall = new Audio('bounce_wall.mp3');
+const bounce_paddle = new Audio('paddle_drop.mp3');
+const break_brick = new Audio('break_brick.wav');
+const paddle_drop = new Audio('paddle_drop_2.mp3');
 
 // Level generation preparation
 rightPressed = false
@@ -16,6 +26,8 @@ for(b of a){
 }
 
 function level1 () {
+  //game_start.play();
+
   brickRowCount = 4;
   brickColumnCount = 10;
   brickcount = 0
@@ -29,6 +41,9 @@ function level1 () {
 
 }
 function level2 () {
+  //game_start.play();
+
+  
   brickRowCount = 6;
   brickColumnCount = 10;
   brickcount=0
@@ -84,7 +99,7 @@ let paddle = {
   x:250,
   y:400,
 
-  width:200,
+  width:150,
   height:20,
 
   draw: function(){
@@ -200,12 +215,14 @@ function brickCollisionDetection() {
             brickcount--;
             if(brickcount === 0) endGame("won")
         }
+        document.querySelector("#current-score").innerText = "Score: " + score
       }
     }
   }
 }
 
 function endGame(condition){
+  //game_start.stop();
   ball.dx = 0
   ball.dy = 0
   ball.x= 250

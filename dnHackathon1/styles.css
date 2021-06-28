@@ -15,7 +15,18 @@
     height: 500px;
     background-color: aliceblue;
     position :absolute;
-    z-index: 1
+    z-index: 2
+}
+#current-score{
+    margin-top: 2.5px;
+    margin-right: 2.5px;
+    width:100px;
+    height: 40px;
+    position:fixed;
+    top: 0px;
+    left: 400px;
+    z-index: 1;
+    background-color: red;
 }
 
 #score-screen{
@@ -25,10 +36,9 @@
     height: 500px;
     background-color: aliceblue;
     position :absolute;
-    z-index: 1
+    z-index: 2
 }
 
 .remove-load-screen {
-
     visibility: hidden;
 }

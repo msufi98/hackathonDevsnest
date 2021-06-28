@@ -20,12 +20,17 @@
         <h2>Your score is:</h2><span id ="score"></span></h3>
         <button onclick="mainMenu()">Main Menu</button>
     </div>
-    <canvas id="can" height="500px" width="495px"></canvas>
+    <canvas id="can" height="500px" width="495px">
+    
+    </canvas>
+    <div id ="current-score">Score: 0</div>
+
+    </div>
 
     <div class="high-score">
 
 	</div>
-		<div class="reset">Reset High Score</div>
+		<button onclick="reset()" class="reset">Reset High Score</button>
 
         <script src="script.js"></script>
     </body>
