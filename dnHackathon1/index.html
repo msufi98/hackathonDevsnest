@@ -9,11 +9,22 @@
         </head>
     </head>
     <body>
+    <div id="load-screen">
+        <h2>Box breaker</h2>
+        <h3>Level1 <button onclick="level1()">Level1</button>High score: <span id = "high-score1"class ="high-score"></span></h3>
+        <h3>Level2 <button onclick="level2()">Level2</button>High score: <span id = "high-score2"class ="high-score"></span></h3>
+
+    </div>
+
+    <div id="score-screen" class="remove-load-screen">
+        <h2>Your score is:</h2><span id ="score"></span></h3>
+        <button onclick="mainMenu()">Main Menu</button>
+    </div>
     <canvas id="can" height="500px" width="495px"></canvas>
 
     <div class="high-score">
 
-		</div>
+	</div>
 		<div class="reset">Reset High Score</div>
 
         <script src="script.js"></script>

@@ -1,9 +1,68 @@
 var canvas = document.getElementById("can");
 var ctx = canvas.getContext("2d");
+level = 0
 
+
+// Level generation preparation
 rightPressed = false
 leftPressed = false
-speed = 2
+speed = 0
+var brickRowCount = 0;
+var brickColumnCount =0;
+brickcount = 0
+a = document.querySelectorAll(".high-score")
+for(b of a){
+  b.innerText = 0;
+}
+
+function level1 () {
+  brickRowCount = 4;
+  brickColumnCount = 10;
+  brickcount = 0
+  generateBricksLev1()
+  score = 0
+  speed = 2
+  level =1
+  ball.dx = speed/2
+  ball.dy = -speed/2
+  document.getElementById("load-screen").classList.add("remove-load-screen")
+
+}
+function level2 () {
+  brickRowCount = 6;
+  brickColumnCount = 10;
+  brickcount=0
+  generateBricksLev2()
+  score = 0
+  speed = 3
+  level =2
+  ball.dx = speed/2
+  ball.dy = -speed/2
+  document.getElementById("load-screen").classList.add("remove-load-screen")
+
+}
+
+function generateBricksLev1() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
+      brickcount++;
+    }
+  }
+}
+function generateBricksLev2() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      if((c+r)%2==0){
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
+      brickcount++;
+      }
+      else bricks[c][r] = {status: 0};
+    }
+  }
+}
 
 
 // Ball Object
@@ -12,16 +71,14 @@ let ball = {
   y: 400,
   radius :5,
   
-  dx: speed/2,
-  dy: -(speed/2),
+  dx: 0,
+  dy: -0,
   draw: function() {
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.radius,0,2*Math.PI);
     ctx.stroke();
   }
 };
-
-
 //Paddle Object
 let paddle = {
   x:250,
@@ -89,14 +146,11 @@ function checkWallCollision(){
 // Paddle bouncing functionality
 function checkPaddleCollision(){
   let half = (paddle.width)/2
-  if ((ball.x +ball.radius) > paddle.x && (ball.x -ball.radius) < paddle.x + paddle.width) {
-    if (ball.y +ball.radius === paddle.y) {
+  if ((ball.x) > paddle.x && (ball.x) < paddle.x + paddle.width) {
+    if (Math.abs(ball.y +ball.radius - paddle.y)<2) {
       
-      factor = ((ball.x-paddle.x) - half )/paddle.width * 2
-      if(0.75 < Math.abs(factor)){
-        if(factor<0) factor= -.75
-        else factor=.75
-      } 
+      factor = ((ball.x-paddle.x) - half )/paddle.width /0.5 *.75
+      
         console.log(ball.dx,ball.dy)
         
         ball.dx = factor*speed
@@ -108,8 +162,7 @@ function checkPaddleCollision(){
 
 
 // Brick formation functionality
-var brickRowCount = 4;
-var brickColumnCount = 10;
+
 var brickWidth = 45;
 var brickHeight = 35;
 var brickPadding = 4;
@@ -124,7 +177,7 @@ function brickCollisionDetection() {
   for (var c = 0; c < brickColumnCount; c++) {
     for (var r = 0; r < brickRowCount; r++) {
       var b = bricks[c][r];
-      if (b.status == 1) {
+      if (b.status === 1) {
         if (
           ball.x +ball.radius>= b.x &&
           ball.x -ball.radius<= b.x + brickWidth &&
@@ -132,7 +185,8 @@ function brickCollisionDetection() {
           ball.y - ball.radius <= b.y + brickHeight
         ) // Is ball hitting the brick at all 
         {
-          if((ball.x -ball.radius=== b.x+brickWidth || ball.x +ball.radius=== b.x) && ((ball.y +ball.radius)>b.y && ball.y -ball.radius<b.y+b.height)) // Ball at left or right edge of brick
+          console.log(ball.x,ball.radius, b.x, ball.x -ball.radius - b.x+brickWidth,ball.x +ball.radius - b.x,b.y,ball.radius)
+          if(Math.abs(ball.x -ball.radius - b.x-brickWidth) < 5 || Math.abs(ball.x - b.x) < 5 && ((ball.y +ball.radius)<b.y && ball.y -ball.radius>b.y+b.height)) // Ball at left or right edge of brick
           {
             ball.dx*=-1
           }
@@ -154,22 +208,30 @@ function brickCollisionDetection() {
 function endGame(condition){
   ball.dx = 0
   ball.dy = 0
-  if(condition === "won")
-  document.querySelector(".high-score").innerText = score
-  else
-  document.querySelector(".high-score").innerText = "You lost"
+  ball.x= 250
+  ball.y = 400
+  if(condition === "won"){
+    document.querySelector("#score-screen").classList.remove("remove-load-screen")
+    document.querySelector("#score").innerText = score
+  }
+  else{
+    document.querySelector("#score-screen").classList.remove("remove-load-screen")
+    document.querySelector("#score-screen > h2").innerText = "You lost, Your score is: "
+    document.querySelector("#score").innerText = score
+  }
 
 }
 
-function generateBricks() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-      bricks[c][r] = { x: 0, y: 0, status: 1 };
-    }
+function mainMenu(){
+  document.querySelector("#score-screen").classList.add("remove-load-screen")
+  document.querySelector("#load-screen").classList.remove("remove-load-screen")
+  console.log(document.querySelector(("#high-score"+level)))
+  if(parseInt(document.querySelector(("#high-score"+level)).innerText) < score){
+    document.querySelector(("#high-score"+level)).innerText = score
   }
 }
-brickcount = 0
+
+
 
 function drawBricks() {
   for (var c = 0; c < brickColumnCount; c++) {
@@ -184,13 +246,12 @@ function drawBricks() {
         ctx.fillStyle = "#230c33";
         ctx.fill();
         ctx.closePath();
-        brickcount++;
+        
       }
     }
   }
 }
 
-generateBricks()
 drawBricks()
 
 function game() {
